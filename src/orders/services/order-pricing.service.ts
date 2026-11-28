@@ -32,6 +32,8 @@ export class OrderPricingService {
     const currency = this.validateCurrency(products);
 
     const items = requestedItems.map((requestedItem) => {
+      this.validateQuantity(requestedItem.quantity);
+
       const product = productsById.get(requestedItem.productId);
 
       if (!product) {
@@ -77,6 +79,12 @@ export class OrderPricingService {
 
     if (new Set(productIds).size !== productIds.length) {
       throw new BadRequestException('Duplicate products are not allowed');
+    }
+  }
+
+  private validateQuantity(quantity: number): void {
+    if (!Number.isSafeInteger(quantity) || quantity < 1) {
+      throw new BadRequestException('Invalid product quantity');
     }
   }
 

@@ -68,4 +68,34 @@ export class OrdersService {
       };
     });
   }
+
+  async getMyOrders(userId: string) {
+    return this.dataSource.getRepository(Order).find({
+      where: { userId },
+      relations: {
+        items: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+  }
+
+  async getOrderById(userId: string, orderId: string) {
+    const order = await this.dataSource.getRepository(Order).findOne({
+      where: {
+        id: orderId,
+        userId,
+      },
+      relations: {
+        items: true,
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    return order;
+  }
 }
